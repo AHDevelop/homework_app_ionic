@@ -1,0 +1,16 @@
+<ion-content padding>
+  <div style="display: block" *ngIf="hasHomeworkChartData">
+    <canvas width="500" height="500" baseChart [data]="homeworkChartData" [labels]="homeworkChartLabels" [chartType]="homeworkChartType"></canvas>
+  </div>
+
+    <ion-select [(ngModel)]="termId" style="margin: auto;" (ionChange)="changeTerm($event)">
+      <ion-option [attr.data-index]="1" class="bigFont" [value]="1">過去一ヶ月</ion-option>
+      <ion-option [attr.data-index]="2" class="bigFont" [value]="2">昨日</ion-option>
+      <ion-option [attr.data-index]="3" class="bigFont" [value]="3">今日</ion-option>
+    </ion-select>
+
+  <div id="chatByHomeworks_nonData" style="text-align: center;" *ngIf="!hasHomeworkChartData">
+    <!-- <ons-icon icon="fa-home" size="200px" class="subColor"></ons-icon><br> -->
+    <label class="mainColor">家事がまだ入力されていません</label>
+  </div>
+</ion-content>

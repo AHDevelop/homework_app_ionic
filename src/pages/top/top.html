@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>家事入力</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list modifier="inset" class="homeworkList fixed-content" id="itemList">
+    <div *ngFor="let data of roomHomeworkList; let i = index" [attr.data-index]="i">
+      <ion-item modifier="longdivider" *ngIf="data.is_visible" id="item_{{i}}" class="large_list_item">
+        <ion-label>{{data.home_work_name}}</ion-label>
+        <ion-label *ngIf="data.home_work_time_hh != undefined" class="hourLabel-max-width">{{data.home_work_time_hh}}</ion-label>
+        <ion-label *ngIf="data.home_work_time_hh == undefined" class="hourLabel-max-width">0.0</ion-label>
+        <ion-label class="hour-max-width">時間</ion-label>
+        <ion-icon name="add-circle" class="add-circle" (click)="callInputHomeWork(i)" item-end></ion-icon>
+        <ion-icon name="trash" item-end (click)="resetHomeworkTime(i)"></ion-icon>
+      </ion-item>
+    </div>
+  </ion-list>
+</ion-content>

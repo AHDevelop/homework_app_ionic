@@ -21,9 +21,10 @@ $app-direction: ltr;
 // the Sass variables found in Ionic's source scss files.
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
+$text-color: #EF6C71;
 
-
-
+// $item-md-font-size: 2.0rem;
+// $item-paragraph-margin-top: 100;
 
 // Named Color Variables
 // --------------------------------------------------
@@ -32,12 +33,11 @@ $app-direction: ltr;
 // to match your app's branding. Ionic uses a Sass map of
 // colors so you can add, rename and remove colors as needed.
 // The "primary" color is the only required color in the map.
-
 $colors: (
-  primary:    #488aff,
-  secondary:  #32db64,
-  danger:     #f53d3d,
-  light:      #f4f4f4,
+  primary:    #EF6C71,
+  secondary:  #EF6C71,
+  danger:     #EF6C71,
+  light:      #EF6C71,
   dark:       #222
 );
 

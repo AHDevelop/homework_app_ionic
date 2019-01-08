@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>メンバー管理</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list modifier="inset" class="memberList fixed-content">
+    <div *ngFor="let data of roomMemberList; let i = index" [attr.data-index]="i">
+      <ion-item modifier="longdivider" id="item_{{i}}" class="large_list_item">
+        <ion-label>{{data.user_name}}</ion-label>
+        <ion-label *ngIf="data.is_owner">部屋オーナー</ion-label>
+        <button ion-button (click)="removeMember($index)" class="deleteBtn" *ngIf="!data.is_owner" ng-disabled="roomInfo.is_owned != 1">除外</button>
+      </ion-item>
+    </div>
+  </ion-list>
+</ion-content>

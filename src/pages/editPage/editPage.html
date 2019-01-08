@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-buttons style="float: left;">
+      <button ion-button (click)="back()" class="bar-button">
+        <ion-icon name="ios-arrow-back" class="icon-back"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>家事編集</ion-title>
+    <ion-buttons end>
+      <button ion-button class="bar-button" (click)="deleteRoomHomework()" *ngIf="roomHomeworkId != undefined">
+        <ion-icon name="trash" class="icon-trash"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+      <div class="center margin-bottom-10">
+        <div class="left subFont margin-bottom-5" style="font-size: 12px;">家事名</div>
+        <ion-input type="text" placeholder="" modifier="underbar" class="left bigFont margin-bottom-5 pinkFont" max="50" [(ngModel)]="workname"></ion-input>
+      </div>
+
+      <div class="center" style="margin-bottom: 20px;">
+          <ion-item>
+            <ion-label class="mainColor">{{isvisible ? '家事入力に表示する' : '家事入力に表示しない'}}</ion-label>
+            <ion-toggle [(ngModel)]="isvisible" checked="isvisible" (click)="clickVisible()" class="isDisabledTopSwitch" [disabled]="roomHomeworkId == undefined"></ion-toggle>
+          </ion-item>
+      </div>
+
+      <div class="center">
+        <button ion-button (click)="insertRoomHomework()" class="registerBtn">登録</button>
+      </div>
+</ion-content>

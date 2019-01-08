@@ -5,7 +5,7 @@ import { GoogleAuth } from '../../app/shared/shared.googleAuth';
 import { Api } from '../../app/shared/shared.api';
 import { LoadingController } from 'ionic-angular';
 import { MyGlobalValue } from '../../app/MyGlobalValue';
-import { HomePage } from '../../pages/home/home';
+import { TopPage } from '../../pages/top/top';
 
 @Component({
   selector: 'page-login',
@@ -14,6 +14,11 @@ import { HomePage } from '../../pages/home/home';
 
 export class LoginPage {
   userName: string = "";
+  googleAuth: any;
+
+  // 処理中ダイアログ
+  loading: any;
+
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public loadingCtrl: LoadingController, public myGlobalValue: MyGlobalValue, public api: Api) {
 
@@ -30,15 +35,17 @@ export class LoginPage {
     // 以下、自動ログインの流れ
     // 過去のログイン履歴を取得する
     var _self = this;
-    var googleAuth = new GoogleAuth();
+    this.googleAuth = new GoogleAuth();
     if (access_token !== null) {
-      googleAuth.getDataProfile(access_token).done(function(data) {
+      this.googleAuth.getDataProfile(access_token).done(function(data) {
         _self.secondLoginWithGoogle();
       });
     } else if (homework_serial !== null) {
       setTimeout(function() {
         // 画面が描画されるまで一瞬待つ
-        Shared.showLoading(_self.loadingCtrl);
+        // _self.loading = Shared.showLoading(_self.loadingCtrl);
+        // _self.loading.present();
+
         _self.secondLoginWithHomework(homework_serial);
       }, 500);
     }
@@ -75,19 +82,21 @@ export class LoginPage {
   */
   secondLoginWithGoogle() {
 
-    Shared.showLoading(this.loadingCtrl);
+    this.loading = Shared.showLoading(this.loadingCtrl);
+    this.loading.present();
 
-    if (googleAuth.gmailID === "") {
+    if (this.googleAuth.gmailID === "") {
       alert("Google認証情報を取得できません");
       return false;
     }
 
     // ユーザーの存在チェック&Token更新
     var _self = this;
-    this.api.getUserInfo(googleAuth).done(function(response) {
+    this.api.getUserInfo(_self.googleAuth).done(function(response) {
 
       // 既存ユーザー情報あり
       _self.myGlobalValue.userInfo = response.results[0];
+      _self.api.setUserInfo(_self.myGlobalValue.userInfo);
       _self.myGlobalValue.isSingIn = true;
 
       if (_self.myGlobalValue.inviteInfo.invite_room_id != undefined) {
@@ -106,7 +115,8 @@ export class LoginPage {
   */
   secondLoginWithHomework(homework_serial) {
 
-    Shared.showLoading(this.loadingCtrl);
+    this.loading = Shared.showLoading(this.loadingCtrl);
+    this.loading.present();
 
     // ユーザーの存在チェック　トークン更新
     var _self = this;
@@ -114,6 +124,7 @@ export class LoginPage {
 
       // 既存ユーザー情報あり
       _self.myGlobalValue.userInfo = response.results[0];
+      _self.api.setUserInfo(_self.myGlobalValue.userInfo);
       _self.myGlobalValue.isSingIn = true;
 
       if (_self.myGlobalValue.inviteInfo.invite_room_id != undefined) {
@@ -131,22 +142,25 @@ export class LoginPage {
   */
   firstLoginWithGoogle() {
 
-    Shared.showLoading(this.loadingCtrl);
+    this.loading = Shared.showLoading(this.loadingCtrl);
+    this.loading.present();
 
     // GoogleのIDを取得
+    this.googleAuth = new GoogleAuth();
     var _self = this;
-    googleAuth.callGoogle().done(function(data) {
+    _self.googleAuth.callGoogle().done(function(data) {
 
-      if (googleAuth.gmailID !== "") {
+      if (_self.googleAuth.gmailID !== "") {
 
         // ユーザーの存在チェック&Token更新
-        _self.api.getUserInfo(googleAuth).done(function(response) {
+        _self.api.getUserInfo(_self.googleAuth).done(function(response) {
 
           _self.myGlobalValue.userInfo = response.results[0];
+          _self.api.setUserInfo(_self.myGlobalValue.userInfo);
 
           if (_self.myGlobalValue.userInfo === undefined) {
             // 新規ユーザー登録
-            _self.api.insertNewUser(googleAuth).done(function(response) {
+            _self.api.insertNewUser(_self.googleAuth).done(function(response) {
 
               // 登録したユーザーと部屋情報が返却される
               var registerInfo = response.results;
@@ -157,6 +171,7 @@ export class LoginPage {
               _self.myGlobalValue.roomInfo.user_id = registerInfo["user_id"];
               _self.myGlobalValue.roomInfo.is_owned = true;
               localStorage.setItem('roomInfo.room_id', _self.myGlobalValue.roomInfo.room_id);
+              _self.api.setRoomInfo(_self.myGlobalValue.roomInfo);
 
               _self.myGlobalValue.userInfo = {};
               _self.myGlobalValue.userInfo.user_id = registerInfo["user_id"];
@@ -165,6 +180,7 @@ export class LoginPage {
               _self.myGlobalValue.userInfo.auth_type = registerInfo["auth_type"];
               _self.myGlobalValue.userInfo.auth_id = registerInfo["auth_id"];
               _self.myGlobalValue.userInfo.app_token = registerInfo["app_token"];
+              _self.api.setUserInfo(_self.myGlobalValue.userInfo);
 
               _self.myGlobalValue.isSingIn = true;
 
@@ -202,17 +218,19 @@ export class LoginPage {
   */
   firstLoginWithHomework() {
 
-    Shared.showLoading(this.loadingCtrl);
+    this.loading = Shared.showLoading(this.loadingCtrl);
+    this.loading.present();
 
     // TODO: 端末のUUIDを取得
     // var serial = device.serial;
-    var serial = "1234567891";
+    var serial = "1234567893";
 
     // ユーザーの存在チェック&Token更新
     var _self = this;
     this.api.getUserInfoBySerial(serial).done(function(response) {
 
       _self.myGlobalValue.userInfo = response.results[0];
+      _self.api.setUserInfo(_self.myGlobalValue.userInfo);
 
       if (_self.myGlobalValue.userInfo === undefined) {
         // 新規ユーザー登録
@@ -227,6 +245,7 @@ export class LoginPage {
           _self.myGlobalValue.roomInfo.user_id = registerInfo["user_id"];
           _self.myGlobalValue.roomInfo.is_owned = true;
           localStorage.setItem('roomInfo.room_id', _self.myGlobalValue.roomInfo.room_id);
+          _self.api.setRoomInfo(_self.myGlobalValue.roomInfo);
 
           _self.myGlobalValue.userInfo = {};
           _self.myGlobalValue.userInfo.user_id = registerInfo["user_id"];
@@ -235,6 +254,7 @@ export class LoginPage {
           _self.myGlobalValue.userInfo.auth_type = registerInfo["auth_type"];
           _self.myGlobalValue.userInfo.auth_id = registerInfo["auth_id"];
           _self.myGlobalValue.userInfo.app_token = registerInfo["app_token"];
+          _self.api.setUserInfo(_self.myGlobalValue.userInfo);
 
           _self.myGlobalValue.isSingIn = true;
 
@@ -276,12 +296,13 @@ export class LoginPage {
       // エラーが返却されたそのままの部屋情報でログイン
       // 問題なければ初期設定の部屋情報を更新する
       if (response.message !== undefined) {
-        ons.notification.alert({
-          title: "",
-          messageHTML: response.message,
-        }
-        );
-        s_self.etDefaultRoom();
+//// TODO:
+        // ons.notification.alert({
+        //   title: "",
+        //   messageHTML: response.message,
+        // }
+        // );
+        _self.setDefaultRoom();
         return false;
       }
 
@@ -289,14 +310,15 @@ export class LoginPage {
         _self.myGlobalValue.roomInfo = response.results[0];
         _self.myGlobalValue.roomInfo.is_owned = false;
         localStorage.setItem('roomInfo.room_id', _self.myGlobalValue.roomInfo.room_id);
+        _self.api.setRoomInfo(_self.myGlobalValue.roomInfo);
+
         // ログインしたら招待情報はリセット
         _self.myGlobalValue.inviteInfo = {};
       }
 
       // TOP画面を表示する
-      Shared.hideLoading();
-      _self.navCtrl.push(HomePage);
-      // myNavigator.replacePage('layout.html');
+      Shared.hideLoading(_self.loading);
+      _self.navCtrl.setRoot(TopPage);
     });
   }
 
@@ -307,8 +329,6 @@ export class LoginPage {
 
     // 部屋情報取得
     var _self = this;
-    console.log(_self)
-    console.log(_self.myGlobalValue)
     this.api.getRoomsWithUser().done(function(response) {
 
       // 前回の部屋情報があれば引き継ぎ
@@ -316,23 +336,27 @@ export class LoginPage {
 
       if (room_id === null) {
         _self.myGlobalValue.roomInfo = response.results[0];
+        _self.api.setRoomInfo(_self.myGlobalValue.roomInfo);
         localStorage.setItem('roomInfo.room_id', _self.myGlobalValue.roomInfo.room_id);
       } else {
         // 前回情報がある場合は初期設定の部屋を設定する
-        if (1 < response.results.length) {
+        if (0 < response.results.length) {
           response.results.forEach(function(roomObj) {
             if (roomObj.room_id == room_id) {
               _self.myGlobalValue.roomInfo = roomObj;
+              _self.api.setRoomInfo(_self.myGlobalValue.roomInfo);
             }
           });
         } else {
           _self.myGlobalValue.roomInfo = response.results[0];
+          _self.api.setRoomInfo(_self.myGlobalValue.roomInfo);
         }
       }
-      // myNavigator.replacePage('layout.html');
-      _self.navCtrl.push(HomePage);
+
+      _self.navCtrl.setRoot(TopPage);
+
     }).always(function() {
-      Shared.hideLoading();
+      Shared.hideLoading(_self.loading);
     });
   }
 }

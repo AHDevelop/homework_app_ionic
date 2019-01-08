@@ -34,56 +34,58 @@ export class GoogleAuth {
   /*
   URL定義
   */
-  scope = 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email';
-  redirectUri = 'http://localhost';
-  baseUrl = 'https://accounts.google.com/o/oauth2/';
-  revokeUrl = `${this.baseUrl}revoke?token=${this.accessToken}`;
+  scope: string = 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email';
+  redirectUri: string = 'http://localhost';
+  baseUrl :string = 'https://accounts.google.com/o/oauth2/';
+  revokeUrl: string = `${this.baseUrl}revoke?token=${this.accessToken}`;
 
     /*
     認証メイン処理
     */
     authorize() {
 
+// TODO: Google認証
         var deferred = $.Deferred();
-
-        var authUrlWithParam = this.baseUrl + 'auth?' + $.param({
-            client_id: this.clientId,
-            redirect_uri: this.redirectUri,
-            response_type: 'code',
-            scope: this.scope
-        });
-
-        var authWindow = window.open(authUrlWithParam, '_blank', 'location=no,toolbar=no');
-
-        $(authWindow).on('loadstart', function(e) {
-            var url = e.originalEvent.url;
-            var code = /\?code=(.+)$/.exec(url);
-            var error = /\?error=(.+)$/.exec(url);
-
-            if (code || error) {
-                authWindow.close();
-            }
-
-            if (code) {
-                $.post(this.baseUrl + 'token', {
-                    code: code[1],
-                    client_id: this.clientId,
-                    client_secret: this.ClientSecret,
-                    redirect_uri: this.redirectUri,
-                    grant_type: 'authorization_code'
-                }).done(function(data) {
-                    deferred.resolve(data);
-                }).fail(function(response) {
-                    deferred.reject(response.responseJSON);
-                });
-
-            } else if(error) {
-                deferred.reject({
-                    error: error[1]
-                });
-            }
-        });
-
+        //
+        // var authUrlWithParam = this.baseUrl + 'auth?' + $.param({
+        //     client_id: this.clientId,
+        //     redirect_uri: this.redirectUri,
+        //     response_type: 'code',
+        //     scope: this.scope
+        // });
+        //
+        // var authWindow = window.open(authUrlWithParam, '_blank', 'location=no,toolbar=no');
+        //
+        // var _self = this;
+        // $(authWindow).on('loadstart', function(e) {
+        //     var url = e.originalEvent.url;
+        //     var code = /\?code=(.+)$/.exec(url);
+        //     var error = /\?error=(.+)$/.exec(url);
+        //
+        //     if (code || error) {
+        //         authWindow.close();
+        //     }
+        //
+        //     if (code) {
+        //         $.post(_self.baseUrl + 'token', {
+        //             code: code[1],
+        //             client_id: _self.clientId,
+        //             client_secret: _self.ClientSecret,
+        //             redirect_uri: _self.redirectUri,
+        //             grant_type: 'authorization_code'
+        //         }).done(function(data) {
+        //             deferred.resolve(data);
+        //         }).fail(function(response) {
+        //             deferred.reject(response.responseJSON);
+        //         });
+        //
+        //     } else if(error) {
+        //         deferred.reject({
+        //             error: error[1]
+        //         });
+        //     }
+        // });
+        //
         return deferred.promise();
     }
 

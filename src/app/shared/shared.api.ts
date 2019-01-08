@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { MyGlobalValue } from '../MyGlobalValue';
 import { Injectable } from '@angular/core';
 import * as Shared from '../../app/shared/shared.module';
+import * as $ from "jquery";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-shared-api',
@@ -28,12 +30,28 @@ export class Api {
   _roomInfo: any;
   _inviteInfo: any;
 
-  constructor(myGlobalValue: MyGlobalValue) {
-
+  constructor(public myGlobalValue: MyGlobalValue) {
     this._myGlobalValue = myGlobalValue;
     this._userInfo = myGlobalValue.userInfo;
     this._roomInfo = myGlobalValue.roomInfo;
     this._inviteInfo = myGlobalValue.inviteInfo;
+  }
+
+  setGlobalValue(myGlobalValue){
+    this._myGlobalValue = myGlobalValue;
+    this._userInfo = myGlobalValue.userInfo;
+    this._roomInfo = myGlobalValue.roomInfo;
+    this._inviteInfo = myGlobalValue.inviteInfo;
+  }
+
+  setUserInfo(userInfo){
+    this._userInfo = userInfo;
+  }
+  setRoomInfo(roomInfo){
+    this._roomInfo = roomInfo;
+  }
+  setInviteInfo(inviteInfo){
+    this._inviteInfo = inviteInfo;
   }
 
   /*
@@ -100,14 +118,13 @@ export class Api {
       if (jqXHR.status == 401) {
         alert('認証に失敗しました。');
 
-        isSingIn = false;
+        // // TODO: ここで失敗時にログアウトするような仕組みが必要 this.isSingIn = false;
         localStorage.removeItem('roomInfo.room_id');
 
         var serial = localStorage.getItem('homework_user.serial');
         if (serial !== null) {
           localStorage.removeItem('homework_user.serial');
-          Shared.hideLoading();
-          myNavigator.replacePage('login.html');
+          // myNavigator.replacePage('login.html');
           return false;
         } else {
           if (localStorage.getItem('googleAuth.access_token') !== null) {
@@ -115,21 +132,16 @@ export class Api {
               localStorage.removeItem('googleAuth.access_token');
             });
           }
-          Shared.hideLoading();
-          myNavigator.replacePage('login.html');
+          // myNavigator.replacePage('login.html');
           return false;
         }
       } else {
         alert('接続に失敗しました。時間を空けて再度実施してください。');
-        Shared.hideLoading();
         // alert('接続に失敗しました。URL:' +  url);
       }
     });
 
     resObj.always(function() {
-    });
-
-    resObj.complete(function() {
     });
 
     return resObj;
@@ -143,7 +155,7 @@ export class Api {
 
     var url = this.buildBaseApiUrl() + "homework" + '/' + roomId;
     var dataObj = {};
-    var resultObj = this.callApi(this.API_METHOD_GET, url, dataObj);
+    var resultObj = this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
     return resultObj;
   }
 
@@ -155,7 +167,7 @@ export class Api {
 
     var url = this.buildBaseApiUrl() + "homeworkhist" + '/room_id=' + roomId;
     var dataObj = {};
-    var resultObj = this.callApi(this.API_METHOD_GET, url, dataObj);
+    var resultObj = this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
     return resultObj;
   }
 
@@ -181,7 +193,7 @@ export class Api {
     dataObj['room_id'] = roomId;
     dataObj['record'] = [homeworkResult];
 
-    return this.callApi(this.API_METHOD_POST, url, dataObj);
+    return this.callApi(this.API_METHOD_POST, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -190,7 +202,7 @@ export class Api {
   */
   updateHomeworkHist(homeworkHistId, homeworkTimeHH) {
 
-    var url = bthis.uildBaseApiUrl() + "homeworkhist" + '/update.json';
+    var url = this.buildBaseApiUrl() + "homeworkhist" + '/update.json';
 
     var homeworkHist = {};
     homeworkHist["home_work_hist_id"] = homeworkHistId;
@@ -201,7 +213,7 @@ export class Api {
     dataObj['room_id'] = this._roomInfo.room_id;
     dataObj['record'] = [homeworkHist];
 
-    return this.callApi(this.API_METHOD_PUT, url, dataObj);
+    return this.callApi(this.API_METHOD_PUT, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -210,7 +222,7 @@ export class Api {
   */
   deleteHomeworkHist(homeworkHistId) {
 
-    var url = bthis.uildBaseApiUrl() + "homeworkhist" + '/update.json';
+    var url = this.buildBaseApiUrl() + "homeworkhist" + '/update.json';
 
     var homeworkHist = {};
     homeworkHist["home_work_hist_id"] = homeworkHistId;
@@ -220,7 +232,7 @@ export class Api {
     dataObj['room_id'] = this._roomInfo.room_id;
     dataObj['record'] = [homeworkHist];
 
-    return this.callApi(this.API_METHOD_DELETE, url, dataObj);
+    return this.callApi(this.API_METHOD_DELETE, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -232,12 +244,12 @@ export class Api {
     var url = this.buildBaseApiUrl() + "homeworkhist/bulk" + '/update.json';
 
     var dataObj = {};
-    dataObj['user_id'] = this._userInfo.user_id;;
+    dataObj['user_id'] = this._userInfo.user_id;
     dataObj['room_id'] = this._roomInfo.room_id;
     dataObj['room_home_work_id'] = homeworkHistId;
     dataObj['delete_date'] = moment().format('YYYY-MM-DD');
 
-    return this.callApi(this.API_METHOD_DELETE, url, dataObj);
+    return this.callApi(this.API_METHOD_DELETE, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -254,10 +266,10 @@ export class Api {
     dataObj['room_id'] = roomId;
     dataObj['record'] = record;
 
-    if (record[0]["room_home_work_id"] == "") {
-      return this.callApi(this.API_METHOD_POST, url, dataObj);
+    if (record[0]["room_home_work_id"] == undefined) {
+      return this.callApi(this.API_METHOD_POST, url, dataObj, undefined, undefined);
     } else {
-      return this.callApi(this.API_METHOD_PUT, url, dataObj);
+      return this.callApi(this.API_METHOD_PUT, url, dataObj, undefined, undefined);
     }
   }
 
@@ -275,7 +287,7 @@ export class Api {
     dataObj['room_id'] = this._roomInfo.room_id;
     dataObj['record'] = record;
 
-    return this.callApi(this.API_METHOD_DELETE, url, dataObj);
+    return this.callApi(this.API_METHOD_DELETE, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -288,7 +300,7 @@ export class Api {
 
     var dataObj = {};
 
-    return this.callApi(this.API_METHOD_GET, url, dataObj);
+    return this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -300,7 +312,7 @@ export class Api {
     var url = this.buildBaseApiUrl() + "users" + '/key=' + googleAuth.gmailID + '&authToken=' + googleAuth.accessToken;
     var dataObj = {};
 
-    return this.callApi(this.API_METHOD_GET, url, dataObj, googleAuth);
+    return this.callApi(this.API_METHOD_GET, url, dataObj, googleAuth, undefined);
   }
 
   /*
@@ -332,7 +344,7 @@ export class Api {
       dataObj['user_name'] = googleAuth.gmailLastName + ' ' + googleAuth.gmailFirstName;
       dataObj['auth_token'] = googleAuth.accessToken;
     }
-    return this.callApi(this.API_METHOD_POST, url, dataObj);
+    return this.callApi(this.API_METHOD_POST, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -349,7 +361,7 @@ export class Api {
     dataObj['auth_type'] = '3';
     dataObj['user_name'] = userName;
 
-    return this.callApi(this.API_METHOD_POST, url, dataObj);
+    return this.callApi(this.API_METHOD_POST, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -361,7 +373,7 @@ export class Api {
     var url = this.buildBaseApiUrl() + "rooms" + '/' + 'user_id=' + this._userInfo.user_id;
     var dataObj = {};
 
-    return this.callApi(this.API_METHOD_GET, url, dataObj);
+    return this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -373,7 +385,7 @@ export class Api {
     var url = this.buildBaseApiUrl() + "users" + '/' + 'room_id=' + this._roomInfo.room_id;
     var dataObj = {};
 
-    return this.callApi(this.API_METHOD_GET, url, dataObj);
+    return this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -390,7 +402,7 @@ export class Api {
     dataObj['room_no'] = roomNo;
     dataObj['user_id'] = this._userInfo.user_id;
 
-    return this.callApi(this.API_METHOD_POST, url, dataObj);
+    return this.callApi(this.API_METHOD_POST, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -408,7 +420,7 @@ export class Api {
     dataObj['invite_to_user_id'] = this._userInfo.user_id;
     dataObj['invite_param'] = this._inviteInfo.param;
 
-    return this.callApi(this.API_METHOD_POST, url, dataObj);
+    return this.callApi(this.API_METHOD_POST, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -425,7 +437,7 @@ export class Api {
     dataObj['room_id'] = this._roomInfo.room_id;
     dataObj['user_id'] = this._userInfo.user_id;
 
-    return this.callApi(this.API_METHOD_DELETE, url, dataObj);
+    return this.callApi(this.API_METHOD_DELETE, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -442,9 +454,9 @@ export class Api {
     }
 
     var url = this.buildBaseApiUrl() + "homeworkhist/summary?group_by=user&room_id=" + this._roomInfo.room_id + "&from=" + fromDate + "&to=" + toDate;
-    dataObj = {};
+    var dataObj = {};
 
-    return this.callApi(this.API_METHOD_GET, url, dataObj);
+    return this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -461,9 +473,9 @@ export class Api {
     }
 
     var url = this.buildBaseApiUrl() + "homeworkhist/summary?group_by=homework&room_id=" + this._roomInfo.room_id + "&from=" + fromDate + "&to=" + toDate;
-    dataObj = {};
+    var dataObj = {};
 
-    return this.callApi(this.API_METHOD_GET, url, dataObj);
+    return this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -481,7 +493,7 @@ export class Api {
     dataObj['room_id'] = this._roomInfo.room_id;
     dataObj['user_id'] = this._userInfo.user_id;
 
-    return this.callApi(this.API_METHOD_PUT, url, dataObj);
+    return this.callApi(this.API_METHOD_PUT, url, dataObj, undefined, undefined);
 
   }
 
@@ -498,7 +510,7 @@ export class Api {
     dataObj['user_id'] = this._userInfo.user_id;
     dataObj['user_name'] = userName;
 
-    return this.callApi(this.API_METHOD_PUT, url, dataObj);
+    return this.callApi(this.API_METHOD_PUT, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -510,7 +522,7 @@ export class Api {
     var url = this.buildBaseApiUrl() + "rooms" + '/' + roomId;
     var dataObj = {};
 
-    return this.callApi(this.API_METHOD_GET, url, dataObj);
+    return this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
   }
 
   /*
@@ -522,7 +534,7 @@ export class Api {
     var url = this.buildBaseApiUrl() + "room/invite/invite_room_id=" + roomId + "&invite_user_id=" + userId;
     var dataObj = {};
 
-    return cathis.llApi(this.API_METHOD_GET, url, dataObj);
+    return this.callApi(this.API_METHOD_GET, url, dataObj, undefined, undefined);
   }
 
 }

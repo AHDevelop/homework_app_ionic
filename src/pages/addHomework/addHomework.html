@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-buttons style="float: left;">
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>家事設定</ion-title>
+    <ion-buttons end>
+      <button ion-button class="bar-button" (click)="callEditPage()">
+        <ion-icon class="icon-add" name="md-add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-list modifier="inset" class="addHomework_homeworkList fixed-content" id="addHomework_homeworkList">
+      <div *ngFor="let data of roomHomeworkList; let i = index" [attr.data-index]="i">
+        <ion-item modifier="longdivider" tappable id="item_{{i}}" (click)="callEditPage(i)" class="large_list_item">
+          <ion-icon name="md-open" item-start></ion-icon>
+          <ion-label item-end>{{data.home_work_name}}</ion-label>
+        </ion-item>
+      </div>
+    </ion-list>
+</ion-content>

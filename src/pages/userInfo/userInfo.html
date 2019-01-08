@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>ユーザー情報</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <div>
+    <div>
+      <div>ユーザー名</div>
+      <ion-input class="left bigFont" [(ngModel)]="userName" max="100"></ion-input>
+    </div>
+    <div class="center">
+      <button ion-button (click)="register()" class="registerBtn">保存</button>
+    </div>
+  </div>
+
+</ion-content>

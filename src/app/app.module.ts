@@ -5,32 +5,60 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
+import { TopPage } from '../pages/top/top';
+import { GraphPage } from '../pages/graph/graph';
+import { UserChartPage } from '../pages/userChart/userChart';
+import { HomeworkChartPage } from '../pages/homeworkChart/homeworkChart';
+import { AddHomeworkPage } from '../pages/addHomework/addHomework';
+import { EditPage } from '../pages/editPage/editPage';
+import { SettingPage } from '../pages/setting/setting';
+import { MemberPage } from '../pages/member/member';
+import { UserInfoPage } from '../pages/userInfo/userInfo';
 
 import { Api } from './shared/shared.api';
 import { GoogleAuth } from './shared/shared.googleAuth';
 
 // import * as Shared from '../app/shared/shared.module';
+// import { ChartModule } from 'angular2-chartjs';
+import { ChartsModule } from 'ng2-charts';
 import { MyGlobalValue } from './MyGlobalValue';
+
 
 @NgModule({
   declarations: [
     MyApp,
-    HomePage,
     LoginPage,
+    TopPage,
+    GraphPage,
+    UserChartPage,
+    HomeworkChartPage,
+    AddHomeworkPage,
+    EditPage,
+    SettingPage,
+    MemberPage,
+    UserInfoPage,
     Api,
     GoogleAuth
   ],
   imports: [
     BrowserModule,
+    ChartsModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage,
     LoginPage,
+    TopPage,
+    GraphPage,
+    UserChartPage,
+    HomeworkChartPage,
+    AddHomeworkPage,
+    EditPage,
+    SettingPage,
+    MemberPage,
+    UserInfoPage,
     Api,
     GoogleAuth
   ],

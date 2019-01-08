@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>設定</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div class="center">
+    <div class="center margin-bottom-10">
+      <div class="left subFont margin-bottom-5" style="font-size: 12px;">部屋名</div>
+      <ion-input class="left bigFont margin-bottom-5" [(ngModel)]="roomName" max="100" [disabled]="is_owned != 1"></ion-input>
+    </div>
+    <div class="center margin-bottom-10">
+      <div class="left subFont margin-bottom-5" style="font-size: 12px;">部屋切替</div>
+      <ion-select [(ngModel)]="selectRoom.room_id">
+        <ion-option *ngFor="let room of roomList; let i = index" [attr.data-index]="i" class="bigFont" [value]="room.room_id">{{room.room_name}}</ion-option>
+      </ion-select>
+    </div>
+    <div style="text-align: right;">
+      <button ion-button (click)="callInvite();" class="registerBtn" style="width: 150px;">LINEで招待</button>
+    </div>
+    <div class="center margin-top-40">
+      <button ion-button (click)="register()" class="registerBtn">保存</button>
+    </div>
+  </div>
+</ion-content>
